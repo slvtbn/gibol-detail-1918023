@@ -1,4 +1,4 @@
-const ApiKey = "use your own key";
+const ApiKey = "35bf792183b34624af4912223e915638";
 const baseUrl = "https://api.football-data.org/v2/";
 const leagueId = "2021";
 const baseEndPoin = `${baseUrl}competitions/${leagueId}`;
@@ -29,14 +29,45 @@ function getListTeams() {
                     <p>Berdiri: ${team.founded} <br>
                        Markas: ${team.venue}
                     </p>
-                    <a href="#!" class="secondary-content"><i class="material-icons">info</i></a>
+                    <a href="#" data-id="${team.id}" data-target="detail" class="secondary-content modal-trigger"><i class="material-icons" data-id="${team.id}">info</i></a>
                 </li>
                 `
             });
             contents.innerHTML = '<ul class="collection">' + teams + '</ul>'
+            const detil = document.querySelectorAll('.secondary-content');
+            detil.forEach(btn => {
+                btn.onclick = (event) => {
+                    showTeamInfo(event.target.dataset.id);
+                }
+            });
         }).catch(err => {
             console.error(err);
         })
+}
+
+function showTeamInfo(id) {
+    let url = `${baseUrl}teams/${id}`;
+    fetch(url, fetchHeader)
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            let detail = `
+                            <tr>
+                                <td><img src="${result.crestUrl}"  alt="" width="100px" align="center"></td>
+                            </tr>
+                            <br>
+                            <p>
+                                Nama Singkat &emsp;: ${result.shortName} /&nbsp;${result.tla}<br>
+                                Berdiri Tahun   &emsp;: ${result.founded} <br>
+                                Markas  &emsp;&emsp;&emsp;&emsp;: ${result.venue} <br>
+                                Alamat  &emsp;&emsp;&emsp;&emsp;: ${result.address} <br>
+                                No.Tlp  &emsp;&emsp;&emsp;&emsp;&nbsp;: ${result.phone} <br>
+                                Website &emsp;&emsp;&emsp;&nbsp;&nbsp;: ${result.website} <br>
+                                Email   &emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;: ${result.email} <br>
+                                Club Color   &emsp;&emsp;&nbsp;: ${result.clubColors} <br>
+                            </p>`;
+            document.getElementById('modal-content').innerHTML = detail;
+        });
 }
 
 function getListStandings() {
